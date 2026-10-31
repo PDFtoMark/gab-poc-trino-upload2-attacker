@@ -9,8 +9,13 @@ jobs:
     steps:
       - run: |
           mkdir -p out
-          printf '%s\n' '<testsuite name="legit" tests="1"><testcase name="legit-test" classname="x" time="0.01"/></testsuite>' > out/TEST-legit.xml
+          cat > out/TEST-evil.xml <<'XML'
+          <testsuite name="attacker" tests="1" failures="0">
+            <testcase name="ATTACKER-CONTROLLED-ROW" classname="io.trino.Fake" time="0.001"/>
+            <properties><property name="not-a-real-test" value="1"/></properties>
+          </testsuite>
+          XML
       - uses: actions/upload-artifact@v7
         with:
-          name: test report legit
+          name: test report attacker
           path: out/TEST-*.xml
